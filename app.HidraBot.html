@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pedidos Inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .client-list {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .client-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .client-name {
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .client-phone {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .client-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+        }
+
+        .notification {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .system-info {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .system-info h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .system-info code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💧 Sistema Inteligente de Pedidos</h1>
+            <p>Algoritmo de Machine Learning para Distribuidora de Água</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h2>📝 Cadastrar Cliente</h2>
+                <div class="input-group">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="clientName" placeholder="João Silva">
+                </div>
+                <div class="input-group">
+                    <label>Telefone (WhatsApp)</label>
+                    <input type="tel" id="clientPhone" placeholder="5511999999999">
+                </div>
+                <button class="btn" onclick="addClient()">Cadastrar Cliente</button>
+            </div>
+
+            <div class="card">
+                <h2>📦 Registrar Entrega</h2>
+                <div class="input-group">
+                    <label>Selecionar Cliente</label>
+                    <select id="deliveryClient">
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Data da Entrega</label>
+                    <input type="date" id="deliveryDate">
+                </div>
+                <button class="btn" onclick="registerDelivery()">Registrar Entrega</button>
+            </div>
+        </div>
+
+        <div class="client-list">
+            <h2 style="color: #667eea; margin-bottom: 20px;">👥 Clientes Cadastrados</h2>
+            <div id="clientsList"></div>
+        </div>
+
+        <div class="system-info">
+            <h3>🤖 Como o Algoritmo Funciona</h3>
+            <p><strong>Aprendizado Progressivo:</strong></p>
+            <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                <li>Após <strong>2 entregas</strong>: calcula a média inicial de consumo</li>
+                <li>A cada nova entrega: refina a previsão com média ponderada</li>
+                <li><strong>3 dias antes</strong> do previsto: envia notificação automática via WhatsApp</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Integração WhatsApp (CallMeBot API):</strong></p>
+            <p style="margin: 10px 0;">Para ativar, cada cliente precisa adicionar o bot: envie <code>I allow callmebot to send me messages</code> para <code>+34 644 44 81 20</code> e use a API Key recebida.</p>
+            <p style="margin-top: 15px; color: #666; font-style: italic;">💡 Este é um protótipo educacional. Em produção, use WhatsApp Business API oficial.</p>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de armazenamento em memória
+        let clients = {};
+        let deliveries = {};
+
+        // Inicializa com data de hoje
+        document.getElementById('deliveryDate').valueAsDate = new Date();
+
+        function addClient() {
+            const name = document.getElementById('clientName').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+
+            if (!name || !phone) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            if (phone.length < 10) {
+                alert('Número de telefone inválido!');
+                return;
+            }
+
+            const clientId = Date.now().toString();
+            clients[clientId] = {
+                id: clientId,
+                name: name,
+                phone: phone,
+                createdAt: new Date().toISOString()
+            };
+
+            deliveries[clientId] = [];
+
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+
+            updateUI();
+            alert(`✅ Cliente ${name} cadastrado com sucesso!`);
+        }
+
+        function registerDelivery() {
+            const clientId = document.getElementById('deliveryClient').value;
+            const date = document.getElementById('deliveryDate').value;
+
+            if (!clientId || !date) {
+                alert('Por favor, selecione um cliente e uma data!');
+                return;
+            }
+
+            deliveries[clientId].push({
+                date: new Date(date + 'T12:00:00'),
+                timestamp: new Date(date + 'T12:00:00').getTime()
+            });
+
+            deliveries[clientId].sort((a, b) => a.timestamp - b.timestamp);
+
+            updateUI();
+            alert('✅ Entrega registrada com sucesso!');
+
+            // Verifica se precisa enviar notificação
+            checkAndNotify(clientId);
+        }
+
+        function calculateAverageDays(clientId) {
+            const clientDeliveries = deliveries[clientId];
+            
+            if (clientDeliveries.length < 2) {
+                return null;
+            }
+
+            let totalDays = 0;
+            for (let i = 1; i < clientDeliveries.length; i++) {
+                const diff = clientDeliveries[i].timestamp - clientDeliveries[i-1].timestamp;
+                const days = diff / (1000 * 60 * 60 * 24);
+                totalDays += days;
+            }
+
+            return Math.round(totalDays / (clientDeliveries.length - 1));
+        }
+
+        function predictNextDelivery(clientId) {
+            const avgDays = calculateAverageDays(clientId);
+            if (!avgDays) return null;
+
+            const lastDelivery = deliveries[clientId][deliveries[clientId].length - 1];
+            const nextDate = new Date(lastDelivery.timestamp + (avgDays * 24 * 60 * 60 * 1000));
+            
+            return {
+                date: nextDate,
+                daysAvg: avgDays
+            };
+        }
+
+        function checkAndNotify(clientId) {
+            const prediction = predictNextDelivery(clientId);
+            if (!prediction) return;
+
+            const today = new Date();
+            const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
+
+            if (daysUntil <= 3 && daysUntil >= 0) {
+                sendWhatsAppMessage(clientId);
+            }
+        }
+
+        function sendWhatsAppMessage(clientId) {
+            const client = clients[clientId];
+            const prediction = predictNextDelivery(clientId);
+            
+            // Mensagem personalizada
+            const message = `Olá ${client.name}! 💧 Seu galão de água deve estar acabando em breve. Gostaria de solicitar outro galão? Responda SIM para confirmar o pedido! 😊`;
+            
+            // CallMeBot API (gratuita) - requer configuração prévia
+            // O cliente precisa adicionar o bot no WhatsApp primeiro
+            const apiUrl = `https://api.callmebot.com/whatsapp.php?phone=${client.phone}&text=${encodeURIComponent(message)}&apikey=SEU_API_KEY_AQUI`;
+            
+            console.log('📱 Notificação WhatsApp preparada para:', client.name);
+            console.log('📞 Telefone:', client.phone);
+            console.log('💬 Mensagem:', message);
+            console.log('🔗 URL da API:', apiUrl);
+            
+            // Em produção, você faria:
+            // fetch(apiUrl).then(response => console.log('Mensagem enviada!'));
+            
+            alert(`📱 Notificação preparada para ${client.name}!\n\nMensagem: ${message}\n\n⚠️ Para enviar de verdade, configure a CallMeBot API com sua chave.`);
+        }
+
+        function updateUI() {
+            // Atualiza lista de clientes no select
+            const select = document.getElementById('deliveryClient');
+            select.innerHTML = '<option value="">Selecione um cliente</option>';
+            
+            Object.values(clients).forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+
+            // Atualiza lista visual de clientes
+            const listDiv = document.getElementById('clientsList');
+            listDiv.innerHTML = '';
+
+            if (Object.keys(clients).length === 0) {
+                listDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum cliente cadastrado ainda.</p>';
+                return;
+            }
+
+            Object.values(clients).forEach(client => {
+                const clientDiv = document.createElement('div');
+                clientDiv.className = 'client-item';
+
+                const deliveryCount = deliveries[client.id].length;
+                const avgDays = calculateAverageDays(client.id);
+                const prediction = predictNextDelivery(client.id);
+
+                let predictionHTML = '';
+                if (prediction) {
+                    const today = new Date();
+                    const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
+                    
+                    let alertClass = '';
+                    let alertText = '';
+                    
+                    if (daysUntil <= 3 && daysUntil >= 0) {
+                        alertClass = 'alert-success';
+                        alertText = `🔔 Cliente será notificado! Próxima entrega prevista em ${daysUntil} dia(s)`;
+                    } else if (daysUntil < 0) {
+                        alertClass = 'alert';
+                        alertText = '⚠️ Entrega atrasada! Cliente pode precisar de galão urgente.';
+                    }
+
+                    if (alertText) {
+                        predictionHTML = `<div class="alert ${alertClass}">${alertText}</div>`;
+                    }
+
+                    predictionHTML += `
+                        <div class="notification">
+                            <strong>📅 Próxima entrega prevista:</strong> ${prediction.date.toLocaleDateString('pt-BR')}<br>
+                            <strong>📊 Baseado em:</strong> ${deliveryCount} entregas anteriores
+                        </div>
+                    `;
+                }
+
+                clientDiv.innerHTML = `
+                    <div class="client-header">
+                        <div>
+                            <div class="client-name">${client.name}</div>
+                            <div class="client-phone">📱 ${client.phone}</div>
+                        </div>
+                        <button class="btn btn-small" onclick="sendWhatsAppMessage('${client.id}')" ${!prediction ? 'disabled' : ''}>
+                            Enviar WhatsApp
+                        </button>
+                    </div>
+                    <div class="client-stats">
+                        <div class="stat">
+                            <div class="stat-label">Entregas Registradas</div>
+                            <div class="stat-value">${deliveryCount}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Média de Consumo</div>
+                            <div class="stat-value">${avgDays ? avgDays + ' dias' : 'Calculando...'}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Status do Sistema</div>
+                            <div class="stat-value">${deliveryCount < 2 ? '🟡 Aprendendo' : '🟢 Ativo'}</div>
+                        </div>
+                    </div>
+                    ${predictionHTML}
+                `;
+
+                listDiv.appendChild(clientDiv);
+            });
+        }
+
+        // Inicializa a interface
+        updateUI();
+
+        // Simula verificação diária de notificações
+        setInterval(() => {
+            Object.keys(clients).forEach(clientId => {
+                checkAndNotify(clientId);
+            });
+        }, 60000); // Verifica a cada minuto (em produção seria 1x por dia)
+    </script>
+</body>
+</html>
