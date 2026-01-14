@@ -115,11 +115,6 @@
             transform: translateY(0);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-            margin-top: 10px;
-        }
-
         .client-list {
             background: white;
             border-radius: 15px;
@@ -283,16 +278,6 @@
                 </div>
                 <button class="btn" onclick="registerDelivery()">Registrar Entrega</button>
             </div>
-
-            <div class="card">
-                <h2>🗄️ Gerenciar Dados</h2>
-                <p style="color: #666; margin-bottom: 15px;">
-                    Total de registros: <strong id="totalRecords">0</strong><br>
-                    Última atualização: <strong id="lastUpdate">-</strong>
-                </p>
-                <button class="btn" onclick="exportData()">📥 Exportar Dados (JSON)</button>
-                <button class="btn btn-danger" onclick="clearAllData()">🗑️ Limpar Todos os Dados</button>
-            </div>
         </div>
 
         <div class="client-list">
@@ -420,13 +405,9 @@
             }
         }
 
-        // Atualiza metadata
+        // Atualiza metadata (removida interface visual)
         function updateMetadata() {
-            const totalDeliveries = Object.values(deliveries).reduce((sum, d) => sum + d.length, 0);
-            const totalRecords = Object.keys(clients).length + totalDeliveries;
-            
-            document.getElementById('totalRecords').textContent = totalRecords;
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('pt-BR');
+            // Metadata salva mas não exibida
         }
 
         // Adiciona cliente
