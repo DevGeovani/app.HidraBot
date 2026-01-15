@@ -344,12 +344,14 @@
                 <li>✅ Backup automático</li>
             </ul>
             
-            <h3 style="margin-top: 20px;">🤖 Algoritmo de Previsão</h3>
-            <p><strong>Machine Learning Integrado:</strong></p>
+            <h3 style="margin-top: 20px;">📱 Integração WhatsApp</h3>
+            <p><strong>Via Link wa.me (100% Gratuito):</strong></p>
             <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
-                <li>Após <strong>2 entregas</strong>: calcula média de consumo</li>
-                <li>Cada nova entrega: refina a previsão</li>
-                <li><strong>3 dias antes</strong>: notificação automática</li>
+                <li>✅ Abre o WhatsApp automaticamente</li>
+                <li>✅ Mensagem personalizada com nome do cliente</li>
+                <li>✅ Funciona no celular e desktop</li>
+                <li>✅ Sem necessidade de API paga</li>
+                <li>✅ Sem configuração adicional</li>
             </ul>
 
             <h3 style="margin-top: 20px;">🚀 Deploy no Netlify</h3>
@@ -376,7 +378,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyBM3NS2G4gFzQG5zo4fOMBcA4Ll-VKhYjA",
             authDomain: "apphidrabot.firebaseapp.com",
-            databaseURL: "https://apphidrabot.firebaseio.com",  // ← ADICIONE ESTA LINHA
+            databaseURL: "https://apphidrabot-default-rtdb.firebaseio.com",
             projectId: "apphidrabot",
             storageBucket: "apphidrabot.firebasestorage.app",
             messagingSenderId: "1010839754933",
@@ -575,11 +577,37 @@
                     return;
                 }
 
-                const message = `Olá ${client.name}! 💧 Seu galão de água deve estar acabando em breve. Gostaria de solicitar outro galão? Responda SIM para confirmar o pedido! 😊`;
+                const today = new Date();
+                const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
                 
-                alert(`📱 Notificação preparada para ${client.name}!\n\nMensagem: ${message}\n\n✅ Em produção, integre com WhatsApp Business API.`);
+                // Mensagem personalizada
+                let message = `Olá ${client.name}! 💧
+
+Percebemos que seu galão de água pode estar acabando em breve.
+
+📅 Previsão: ${prediction.date.toLocaleDateString('pt-BR')}
+⏰ Faltam aproximadamente ${daysUntil} dia(s)
+
+Gostaria de solicitar outro galão agora? 
+
+Responda SIM para confirmar seu pedido! 😊`;
+
+                // Remove o + do telefone se tiver e garante formato correto
+                const phone = client.phone.replace(/[^0-9]/g, '');
+                
+                // Codifica a mensagem para URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Monta o link do WhatsApp
+                const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+                
+                // Abre o WhatsApp
+                window.open(whatsappUrl, '_blank');
+                
+                console.log('✅ WhatsApp aberto para:', client.name);
             } catch (error) {
-                console.error('Erro ao enviar mensagem:', error);
+                console.error('Erro ao abrir WhatsApp:', error);
+                alert('❌ Erro ao abrir WhatsApp. Verifique o número do telefone.');
             }
         }
 
@@ -665,7 +693,7 @@
                             <div class="client-phone">📱 ${client.phone}</div>
                         </div>
                         <button class="btn btn-small" onclick="sendWhatsAppMessage('${client.id}')" ${!prediction ? 'disabled' : ''}>
-                            Enviar WhatsApp
+                            📱 Abrir WhatsApp
                         </button>
                     </div>
                     <div class="client-stats">
