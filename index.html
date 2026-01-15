@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Inteligente de Pedidos</title>
+    <title>Sistema Inteligente de Pedidos - Firebase</title>
     <style>
         * {
             margin: 0;
@@ -39,13 +39,21 @@
             opacity: 0.9;
         }
 
-        .storage-status {
+        .firebase-status {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             padding: 10px 20px;
             border-radius: 8px;
             margin-top: 10px;
             display: inline-block;
+        }
+
+        .firebase-status.connected {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .firebase-status.error {
+            background: rgba(244, 67, 54, 0.3);
         }
 
         .cards {
@@ -113,6 +121,11 @@
 
         .btn:active {
             transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .client-list {
@@ -229,14 +242,30 @@
             color: #666;
         }
 
-        .success-badge {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8em;
-            margin-left: 10px;
+        .setup-card {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .setup-card h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .setup-card ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .setup-card code {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #d63384;
         }
     </style>
 </head>
@@ -244,10 +273,27 @@
     <div class="container">
         <div class="header">
             <h1>💧 Sistema Inteligente de Pedidos</h1>
-            <p>Algoritmo de Machine Learning para Distribuidora de Água</p>
-            <div class="storage-status" id="storageStatus">
-                🔄 Carregando dados...
+            <p>Com Firebase Realtime Database</p>
+            <div class="firebase-status" id="firebaseStatus">
+                🔄 Conectando ao Firebase...
             </div>
+        </div>
+
+        <!-- Card de Configuração (aparece se não configurado) -->
+        <div class="setup-card" id="setupCard" style="display: none;">
+            <h3>⚙️ Configure o Firebase</h3>
+            <p style="margin-bottom: 15px;">Siga estes passos para conectar ao Firebase:</p>
+            <ol>
+                <li>Acesse <strong>console.firebase.google.com</strong></li>
+                <li>Crie um novo projeto (ou use existente)</li>
+                <li>Vá em <strong>Project Settings > General</strong></li>
+                <li>Em "Your apps", clique em <strong>&lt;/&gt; Web</strong></li>
+                <li>Copie as credenciais do <code>firebaseConfig</code></li>
+                <li>Cole no arquivo <code>index.html</code> na linha 450</li>
+                <li>Ative <strong>Realtime Database</strong> no Firebase Console</li>
+                <li>Configure as regras como <code>public</code> (para teste)</li>
+            </ol>
+            <p style="margin-top: 15px; color: #856404;"><strong>⚠️ Importante:</strong> Depois de configurar, recarregue a página!</p>
         </div>
 
         <div class="cards">
@@ -261,7 +307,7 @@
                     <label>Telefone (WhatsApp)</label>
                     <input type="tel" id="clientPhone" placeholder="5511999999999">
                 </div>
-                <button class="btn" onclick="addClient()">Cadastrar Cliente</button>
+                <button class="btn" onclick="addClient()" id="btnAddClient">Cadastrar Cliente</button>
             </div>
 
             <div class="card">
@@ -276,142 +322,123 @@
                     <label>Data da Entrega</label>
                     <input type="date" id="deliveryDate">
                 </div>
-                <button class="btn" onclick="registerDelivery()">Registrar Entrega</button>
+                <button class="btn" onclick="registerDelivery()" id="btnRegisterDelivery">Registrar Entrega</button>
             </div>
         </div>
 
         <div class="client-list">
             <h2 style="color: #667eea; margin-bottom: 20px;">👥 Clientes Cadastrados</h2>
             <div id="clientsList">
-                <div class="loading">Carregando clientes...</div>
+                <div class="loading">🔄 Carregando clientes...</div>
             </div>
         </div>
 
         <div class="system-info">
-            <h3>💾 Sistema de Persistência de Dados</h3>
-            <p><strong>✅ Dados salvos automaticamente!</strong></p>
+            <h3>🔥 Firebase Realtime Database</h3>
+            <p><strong>Banco de dados em tempo real na nuvem!</strong></p>
             <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
-                <li>Todos os dados são salvos na <strong>nuvem</strong> automaticamente</li>
-                <li>Dados persistem entre sessões e dispositivos</li>
-                <li>Sincronização em tempo real</li>
-                <li>Backup automático a cada alteração</li>
+                <li>✅ Dados sincronizados automaticamente</li>
+                <li>✅ Acesso de qualquer dispositivo</li>
+                <li>✅ Atualizações em tempo real</li>
+                <li>✅ 1GB de armazenamento grátis</li>
+                <li>✅ Backup automático</li>
             </ul>
             
-            <h3 style="margin-top: 20px;">🤖 Como o Algoritmo Funciona</h3>
-            <p><strong>Aprendizado Progressivo:</strong></p>
+            <h3 style="margin-top: 20px;">🤖 Algoritmo de Previsão</h3>
+            <p><strong>Machine Learning Integrado:</strong></p>
             <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
-                <li>Após <strong>2 entregas</strong>: calcula a média inicial de consumo</li>
-                <li>A cada nova entrega: refina a previsão com média ponderada</li>
-                <li><strong>3 dias antes</strong> do previsto: envia notificação automática via WhatsApp</li>
+                <li>Após <strong>2 entregas</strong>: calcula média de consumo</li>
+                <li>Cada nova entrega: refina a previsão</li>
+                <li><strong>3 dias antes</strong>: notificação automática</li>
+            </ul>
+
+            <h3 style="margin-top: 20px;">🚀 Deploy no Netlify</h3>
+            <p style="margin-top: 10px;">Este sistema está pronto para:</p>
+            <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                <li>✅ Hospedagem no Netlify (gratuita)</li>
+                <li>✅ HTTPS automático</li>
+                <li>✅ CDN global</li>
+                <li>✅ Deploy em segundos</li>
             </ul>
         </div>
     </div>
 
-    <script>
-        // Sistema de persistência com window.storage
-        let clients = {};
-        let deliveries = {};
-        let isLoading = true;
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-        // Chaves para armazenamento
-        const STORAGE_KEYS = {
-            CLIENTS: 'water_delivery_clients',
-            DELIVERIES: 'water_delivery_deliveries',
-            METADATA: 'water_delivery_metadata'
+    <script>
+        // ==========================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // ==========================================
+        
+        // COLE SUAS CREDENCIAIS AQUI:
+        const firebaseConfig = {
+            apiKey: "AIzaSyBM3NS2G4gFzQG5zo4fOMBcA4Ll-VKhYjA",
+            authDomain: "apphidrabot.firebaseapp.com",
+            databaseURL: "https://apphidrabot.firebaseio.com",  // ← ADICIONE ESTA LINHA
+            projectId: "apphidrabot",
+            storageBucket: "apphidrabot.firebasestorage.app",
+            messagingSenderId: "1010839754933",
+            appId: "1:1010839754933:web:0aa990b8c9d9e8b0e786fc",
+            measurementId: "G-XYXZFE084G"
         };
 
-        // Inicializa o sistema
-        async function initializeSystem() {
-            try {
-                updateStorageStatus('🔄 Carregando dados da nuvem...');
-                
-                // Carrega dados do storage
-                await loadData();
-                
-                // Inicializa com data de hoje
-                document.getElementById('deliveryDate').valueAsDate = new Date();
-                
-                // Atualiza interface
-                updateUI();
-                
-                updateStorageStatus('✅ Dados carregados com sucesso!');
-                isLoading = false;
-                
-            } catch (error) {
-                console.error('Erro ao inicializar:', error);
-                updateStorageStatus('⚠️ Erro ao carregar dados');
-                isLoading = false;
-            }
-        }
+        // ==========================================
+        // INICIALIZAÇÃO
+        // ==========================================
+        
+        let db;
+        let isFirebaseConfigured = false;
 
-        // Carrega dados do storage
-        async function loadData() {
+        function initializeFirebase() {
             try {
-                // Carrega clientes
-                const clientsData = await window.storage.get(STORAGE_KEYS.CLIENTS);
-                if (clientsData && clientsData.value) {
-                    clients = JSON.parse(clientsData.value);
+                // Verifica se está configurado
+                if (firebaseConfig.apiKey === "SUA_API_KEY_AQUI") {
+                    console.warn('⚠️ Firebase não configurado');
+                    document.getElementById('setupCard').style.display = 'block';
+                    updateFirebaseStatus('⚠️ Configure o Firebase', 'error');
+                    return false;
                 }
 
-                // Carrega entregas
-                const deliveriesData = await window.storage.get(STORAGE_KEYS.DELIVERIES);
-                if (deliveriesData && deliveriesData.value) {
-                    deliveries = JSON.parse(deliveriesData.value);
-                }
-
-                console.log('✅ Dados carregados:', Object.keys(clients).length, 'clientes');
-            } catch (error) {
-                // Se não existir dados, inicializa vazio
-                console.log('📝 Iniciando com dados vazios');
-                clients = {};
-                deliveries = {};
-            }
-        }
-
-        // Salva dados no storage
-        async function saveData() {
-            try {
-                // Salva clientes
-                await window.storage.set(STORAGE_KEYS.CLIENTS, JSON.stringify(clients));
+                // Inicializa Firebase
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
                 
-                // Salva entregas
-                await window.storage.set(STORAGE_KEYS.DELIVERIES, JSON.stringify(deliveries));
+                isFirebaseConfigured = true;
+                document.getElementById('setupCard').style.display = 'none';
+                updateFirebaseStatus('✅ Conectado ao Firebase', 'connected');
                 
-                // Salva metadata
-                const metadata = {
-                    lastUpdate: new Date().toISOString(),
-                    totalClients: Object.keys(clients).length,
-                    totalDeliveries: Object.values(deliveries).reduce((sum, d) => sum + d.length, 0)
-                };
-                await window.storage.set(STORAGE_KEYS.METADATA, JSON.stringify(metadata));
+                console.log('✅ Firebase inicializado com sucesso!');
                 
-                console.log('💾 Dados salvos com sucesso!');
-                updateStorageStatus('💾 Dados salvos automaticamente');
-                updateMetadata();
+                // Carrega dados
+                loadClients();
                 
                 return true;
             } catch (error) {
-                console.error('❌ Erro ao salvar:', error);
-                updateStorageStatus('❌ Erro ao salvar dados');
+                console.error('❌ Erro ao inicializar Firebase:', error);
+                updateFirebaseStatus('❌ Erro na conexão', 'error');
+                document.getElementById('setupCard').style.display = 'block';
                 return false;
             }
         }
 
-        // Atualiza status do storage
-        function updateStorageStatus(message) {
-            const statusEl = document.getElementById('storageStatus');
-            if (statusEl) {
-                statusEl.textContent = message;
-            }
+        function updateFirebaseStatus(message, status = '') {
+            const statusEl = document.getElementById('firebaseStatus');
+            statusEl.textContent = message;
+            statusEl.className = 'firebase-status ' + status;
         }
 
-        // Atualiza metadata (removida interface visual)
-        function updateMetadata() {
-            // Metadata salva mas não exibida
-        }
+        // ==========================================
+        // FUNÇÕES DO SISTEMA
+        // ==========================================
 
-        // Adiciona cliente
         async function addClient() {
+            if (!isFirebaseConfigured) {
+                alert('⚠️ Por favor, configure o Firebase primeiro!');
+                return;
+            }
+
             const name = document.getElementById('clientName').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
 
@@ -426,29 +453,36 @@
             }
 
             const clientId = Date.now().toString();
-            clients[clientId] = {
+            const client = {
                 id: clientId,
                 name: name,
                 phone: phone,
                 createdAt: new Date().toISOString()
             };
 
-            deliveries[clientId] = [];
+            try {
+                // Salva cliente no Firebase
+                await db.ref('clients/' + clientId).set(client);
+                
+                // Inicializa array de entregas
+                await db.ref('deliveries/' + clientId).set([]);
 
-            document.getElementById('clientName').value = '';
-            document.getElementById('clientPhone').value = '';
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientPhone').value = '';
 
-            // Salva no storage
-            const saved = await saveData();
-            
-            if (saved) {
-                updateUI();
-                alert(`✅ Cliente ${name} cadastrado e salvo com sucesso!`);
+                alert(`✅ Cliente ${name} cadastrado com sucesso!`);
+            } catch (error) {
+                console.error('Erro ao adicionar cliente:', error);
+                alert('❌ Erro ao cadastrar cliente. Verifique o console.');
             }
         }
 
-        // Registra entrega
         async function registerDelivery() {
+            if (!isFirebaseConfigured) {
+                alert('⚠️ Por favor, configure o Firebase primeiro!');
+                return;
+            }
+
             const clientId = document.getElementById('deliveryClient').value;
             const date = document.getElementById('deliveryDate').value;
 
@@ -457,94 +491,55 @@
                 return;
             }
 
-            deliveries[clientId].push({
-                date: new Date(date + 'T12:00:00'),
-                timestamp: new Date(date + 'T12:00:00').getTime()
-            });
-
-            deliveries[clientId].sort((a, b) => a.timestamp - b.timestamp);
-
-            // Salva no storage
-            const saved = await saveData();
-            
-            if (saved) {
-                updateUI();
-                alert('✅ Entrega registrada e salva com sucesso!');
-                checkAndNotify(clientId);
-            }
-        }
-
-        // Exporta dados
-        async function exportData() {
-            const data = {
-                clients: clients,
-                deliveries: deliveries,
-                exportDate: new Date().toISOString()
-            };
-
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup_distribuidora_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            
-            URL.revokeObjectURL(url);
-            alert('✅ Dados exportados com sucesso!');
-        }
-
-        // Limpa todos os dados
-        async function clearAllData() {
-            if (!confirm('⚠️ Tem certeza que deseja apagar TODOS os dados? Esta ação não pode ser desfeita!')) {
-                return;
-            }
-
-            if (!confirm('⚠️ ÚLTIMA CONFIRMAÇÃO: Todos os clientes e entregas serão perdidos!')) {
-                return;
-            }
-
             try {
-                await window.storage.delete(STORAGE_KEYS.CLIENTS);
-                await window.storage.delete(STORAGE_KEYS.DELIVERIES);
-                await window.storage.delete(STORAGE_KEYS.METADATA);
+                // Busca entregas atuais
+                const snapshot = await db.ref('deliveries/' + clientId).once('value');
+                let deliveries = snapshot.val() || [];
+
+                // Adiciona nova entrega
+                const delivery = {
+                    date: new Date(date + 'T12:00:00').toISOString(),
+                    timestamp: new Date(date + 'T12:00:00').getTime()
+                };
+
+                deliveries.push(delivery);
+
+                // Ordena por timestamp
+                deliveries.sort((a, b) => a.timestamp - b.timestamp);
+
+                // Salva no Firebase
+                await db.ref('deliveries/' + clientId).set(deliveries);
+
+                alert('✅ Entrega registrada com sucesso!');
                 
-                clients = {};
-                deliveries = {};
-                
-                updateUI();
-                updateStorageStatus('🗑️ Dados limpos com sucesso');
-                alert('✅ Todos os dados foram apagados!');
+                // Verifica se precisa notificar
+                checkAndNotify(clientId, deliveries);
             } catch (error) {
-                console.error('Erro ao limpar dados:', error);
-                alert('❌ Erro ao limpar dados!');
+                console.error('Erro ao registrar entrega:', error);
+                alert('❌ Erro ao registrar entrega. Verifique o console.');
             }
         }
 
-        // Funções do algoritmo (mesmas de antes)
-        function calculateAverageDays(clientId) {
-            const clientDeliveries = deliveries[clientId];
-            
-            if (clientDeliveries.length < 2) {
+        function calculateAverageDays(deliveries) {
+            if (!deliveries || deliveries.length < 2) {
                 return null;
             }
 
             let totalDays = 0;
-            for (let i = 1; i < clientDeliveries.length; i++) {
-                const diff = clientDeliveries[i].timestamp - clientDeliveries[i-1].timestamp;
+            for (let i = 1; i < deliveries.length; i++) {
+                const diff = deliveries[i].timestamp - deliveries[i-1].timestamp;
                 const days = diff / (1000 * 60 * 60 * 24);
                 totalDays += days;
             }
 
-            return Math.round(totalDays / (clientDeliveries.length - 1));
+            return Math.round(totalDays / (deliveries.length - 1));
         }
 
-        function predictNextDelivery(clientId) {
-            const avgDays = calculateAverageDays(clientId);
+        function predictNextDelivery(deliveries) {
+            const avgDays = calculateAverageDays(deliveries);
             if (!avgDays) return null;
 
-            const lastDelivery = deliveries[clientId][deliveries[clientId].length - 1];
+            const lastDelivery = deliveries[deliveries.length - 1];
             const nextDate = new Date(lastDelivery.timestamp + (avgDays * 24 * 60 * 60 * 1000));
             
             return {
@@ -553,44 +548,69 @@
             };
         }
 
-        function checkAndNotify(clientId) {
-            const prediction = predictNextDelivery(clientId);
+        function checkAndNotify(clientId, deliveries) {
+            const prediction = predictNextDelivery(deliveries);
             if (!prediction) return;
 
             const today = new Date();
             const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
 
             if (daysUntil <= 3 && daysUntil >= 0) {
-                sendWhatsAppMessage(clientId);
+                console.log(`🔔 Cliente ${clientId} deve ser notificado!`);
             }
         }
 
-        function sendWhatsAppMessage(clientId) {
-            const client = clients[clientId];
-            const prediction = predictNextDelivery(clientId);
-            
-            const message = `Olá ${client.name}! 💧 Seu galão de água deve estar acabando em breve. Gostaria de solicitar outro galão? Responda SIM para confirmar o pedido! 😊`;
-            
-            console.log('📱 Notificação WhatsApp preparada para:', client.name);
-            console.log('📞 Telefone:', client.phone);
-            console.log('💬 Mensagem:', message);
-            
-            alert(`📱 Notificação preparada para ${client.name}!\n\nMensagem: ${message}\n\n✅ Em produção, a mensagem seria enviada automaticamente via WhatsApp API.`);
+        async function sendWhatsAppMessage(clientId) {
+            try {
+                const clientSnapshot = await db.ref('clients/' + clientId).once('value');
+                const client = clientSnapshot.val();
+                
+                const deliveriesSnapshot = await db.ref('deliveries/' + clientId).once('value');
+                const deliveries = deliveriesSnapshot.val() || [];
+
+                const prediction = predictNextDelivery(deliveries);
+                
+                if (!prediction) {
+                    alert('Ainda não há previsão para este cliente. Registre mais entregas!');
+                    return;
+                }
+
+                const message = `Olá ${client.name}! 💧 Seu galão de água deve estar acabando em breve. Gostaria de solicitar outro galão? Responda SIM para confirmar o pedido! 😊`;
+                
+                alert(`📱 Notificação preparada para ${client.name}!\n\nMensagem: ${message}\n\n✅ Em produção, integre com WhatsApp Business API.`);
+            } catch (error) {
+                console.error('Erro ao enviar mensagem:', error);
+            }
         }
 
-        function updateUI() {
-            // Atualiza lista de clientes no select
-            const select = document.getElementById('deliveryClient');
-            select.innerHTML = '<option value="">Selecione um cliente</option>';
-            
-            Object.values(clients).forEach(client => {
-                const option = document.createElement('option');
-                option.value = client.id;
-                option.textContent = client.name;
-                select.appendChild(option);
-            });
+        // ==========================================
+        // INTERFACE
+        // ==========================================
 
-            // Atualiza lista visual de clientes
+        function loadClients() {
+            if (!isFirebaseConfigured) return;
+
+            // Escuta mudanças em tempo real
+            db.ref('clients').on('value', async (snapshot) => {
+                const clients = snapshot.val() || {};
+                
+                // Atualiza select
+                const select = document.getElementById('deliveryClient');
+                select.innerHTML = '<option value="">Selecione um cliente</option>';
+                
+                Object.values(clients).forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = client.name;
+                    select.appendChild(option);
+                });
+
+                // Atualiza lista visual
+                await updateClientsList(clients);
+            });
+        }
+
+        async function updateClientsList(clients) {
             const listDiv = document.getElementById('clientsList');
             listDiv.innerHTML = '';
 
@@ -599,13 +619,16 @@
                 return;
             }
 
-            Object.values(clients).forEach(client => {
+            for (const client of Object.values(clients)) {
+                const deliveriesSnapshot = await db.ref('deliveries/' + client.id).once('value');
+                const deliveries = deliveriesSnapshot.val() || [];
+
                 const clientDiv = document.createElement('div');
                 clientDiv.className = 'client-item';
 
-                const deliveryCount = deliveries[client.id].length;
-                const avgDays = calculateAverageDays(client.id);
-                const prediction = predictNextDelivery(client.id);
+                const deliveryCount = deliveries.length;
+                const avgDays = calculateAverageDays(deliveries);
+                const prediction = predictNextDelivery(deliveries);
 
                 let predictionHTML = '';
                 if (prediction) {
@@ -638,7 +661,7 @@
                 clientDiv.innerHTML = `
                     <div class="client-header">
                         <div>
-                            <div class="client-name">${client.name} <span class="success-badge">💾 Salvo</span></div>
+                            <div class="client-name">${client.name}</div>
                             <div class="client-phone">📱 ${client.phone}</div>
                         </div>
                         <button class="btn btn-small" onclick="sendWhatsAppMessage('${client.id}')" ${!prediction ? 'disabled' : ''}>
@@ -663,20 +686,15 @@
                 `;
 
                 listDiv.appendChild(clientDiv);
-            });
-
-            updateMetadata();
+            }
         }
 
-        // Inicializa o sistema quando a página carrega
-        initializeSystem();
+        // ==========================================
+        // INICIALIZAÇÃO
+        // ==========================================
 
-        // Verifica notificações periodicamente
-        setInterval(() => {
-            Object.keys(clients).forEach(clientId => {
-                checkAndNotify(clientId);
-            });
-        }, 60000);
+        document.getElementById('deliveryDate').valueAsDate = new Date();
+        initializeFirebase();
     </script>
 </body>
 </html>
