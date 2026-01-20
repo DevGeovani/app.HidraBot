@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Inteligente de Pedidos - Firebase</title>
+    <title>Sistema Inteligente de Pedidos</title>
     <style>
         * {
             margin: 0;
@@ -67,7 +68,7 @@
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .card h2 {
@@ -87,7 +88,8 @@
             font-weight: 500;
         }
 
-        .input-group input, .input-group select {
+        .input-group input,
+        .input-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -96,9 +98,18 @@
             transition: border-color 0.3s;
         }
 
-        .input-group input:focus, .input-group select:focus {
+        .input-group input:focus,
+        .input-group select:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .input-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
         }
 
         .btn {
@@ -126,13 +137,14 @@
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
         .client-list {
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .client-item {
@@ -221,7 +233,7 @@
             border-radius: 15px;
             padding: 25px;
             margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .system-info h3 {
@@ -236,132 +248,329 @@
             font-family: monospace;
         }
 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .finance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .finance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .finance-card.revenue {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .finance-card.expense {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .finance-card.profit {
+            background: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%);
+        }
+
+        .finance-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .finance-card .amount {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .transaction-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .transaction-item.expense {
+            border-left-color: #eb3349;
+        }
+
+        .transaction-item.revenue {
+            border-left-color: #11998e;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-amount {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .transaction-amount.positive {
+            color: #11998e;
+        }
+
+        .transaction-amount.negative {
+            color: #eb3349;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .period-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .period-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .period-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
         .loading {
             text-align: center;
             padding: 20px;
             color: #666;
         }
-
-        .setup-card {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .setup-card h3 {
-            color: #856404;
-            margin-bottom: 15px;
-        }
-
-        .setup-card ol {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .setup-card code {
-            background: white;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-family: monospace;
-            color: #d63384;
-        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>💧 Sistema Inteligente de Pedidos</h1>
-            <p>Com Firebase Realtime Database</p>
+            <p>Com Firebase + WhatsApp + Gestão Financeira</p>
             <div class="firebase-status" id="firebaseStatus">
                 🔄 Conectando ao Firebase...
             </div>
         </div>
 
-        <!-- Card de Configuração (aparece se não configurado) -->
-        <div class="setup-card" id="setupCard" style="display: none;">
-            <h3>⚙️ Configure o Firebase</h3>
-            <p style="margin-bottom: 15px;">Siga estes passos para conectar ao Firebase:</p>
-            <ol>
-                <li>Acesse <strong>console.firebase.google.com</strong></li>
-                <li>Crie um novo projeto (ou use existente)</li>
-                <li>Vá em <strong>Project Settings > General</strong></li>
-                <li>Em "Your apps", clique em <strong>&lt;/&gt; Web</strong></li>
-                <li>Copie as credenciais do <code>firebaseConfig</code></li>
-                <li>Cole no arquivo <code>index.html</code> na linha 450</li>
-                <li>Ative <strong>Realtime Database</strong> no Firebase Console</li>
-                <li>Configure as regras como <code>public</code> (para teste)</li>
-            </ol>
-            <p style="margin-top: 15px; color: #856404;"><strong>⚠️ Importante:</strong> Depois de configurar, recarregue a página!</p>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('clientes')">👥 Clientes</button>
+            <button class="tab-btn" onclick="switchTab('financeiro')">💰 Financeiro</button>
         </div>
 
-        <div class="cards">
-            <div class="card">
-                <h2>📝 Cadastrar Cliente</h2>
-                <div class="input-group">
-                    <label>Nome do Cliente</label>
-                    <input type="text" id="clientName" placeholder="João Silva">
+        <div id="tab-clientes" class="tab-content active">
+            <div class="cards">
+                <div class="card">
+                    <h2>📝 Cadastrar Cliente</h2>
+                    <div class="input-group">
+                        <label>Nome do Cliente</label>
+                        <input type="text" id="clientName" placeholder="João Silva">
+                    </div>
+                    <div class="input-group">
+                        <label>Telefone (WhatsApp)</label>
+                        <input type="tel" id="clientPhone" placeholder="5511999999999">
+                        <small>Formato: Código do país + DDD + número (ex: 5511999999999)</small>
+                    </div>
+                    <button class="btn" onclick="addClient()">Cadastrar Cliente</button>
                 </div>
-                <div class="input-group">
-                    <label>Telefone (WhatsApp)</label>
-                    <input type="tel" id="clientPhone" placeholder="5511999999999">
+
+                <div class="card">
+                    <h2>📦 Registrar Entrega</h2>
+                    <div class="input-group">
+                        <label>Selecionar Cliente</label>
+                        <select id="deliveryClient">
+                            <option value="">Selecione um cliente</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Data da Entrega</label>
+                        <input type="date" id="deliveryDate">
+                    </div>
+                    <button class="btn" onclick="registerDelivery()">Registrar Entrega</button>
                 </div>
-                <button class="btn" onclick="addClient()" id="btnAddClient">Cadastrar Cliente</button>
             </div>
 
-            <div class="card">
-                <h2>📦 Registrar Entrega</h2>
-                <div class="input-group">
-                    <label>Selecionar Cliente</label>
-                    <select id="deliveryClient">
-                        <option value="">Selecione um cliente</option>
-                    </select>
+            <div class="client-list">
+                <h2 style="color: #667eea; margin-bottom: 20px;">👥 Clientes Cadastrados</h2>
+                <div id="clientsList">
+                    <div class="loading">🔄 Carregando clientes...</div>
                 </div>
-                <div class="input-group">
-                    <label>Data da Entrega</label>
-                    <input type="date" id="deliveryDate">
-                </div>
-                <button class="btn" onclick="registerDelivery()" id="btnRegisterDelivery">Registrar Entrega</button>
+            </div>
+
+            <div class="system-info">
+                <h3>🔥 Firebase Realtime Database</h3>
+                <p><strong>Banco de dados em tempo real na nuvem!</strong></p>
+                <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                    <li>✅ Dados sincronizados automaticamente</li>
+                    <li>✅ Acesso de qualquer dispositivo</li>
+                    <li>✅ Atualizações em tempo real</li>
+                    <li>✅ 1GB de armazenamento grátis</li>
+                </ul>
+
+                <h3 style="margin-top: 20px;">📱 Integração WhatsApp</h3>
+                <p><strong>Via Link wa.me (100% Gratuito):</strong></p>
+                <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                    <li>✅ Abre o WhatsApp automaticamente</li>
+                    <li>✅ Mensagem personalizada com nome do cliente</li>
+                    <li>✅ Funciona no celular e desktop</li>
+                    <li>✅ Sem necessidade de API paga</li>
+                </ul>
+
+                <h3 style="margin-top: 20px;">🤖 Algoritmo de Previsão</h3>
+                <p><strong>Machine Learning Integrado:</strong></p>
+                <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                    <li>Após <strong>2 entregas</strong>: calcula média de consumo</li>
+                    <li>Cada nova entrega: refina a previsão</li>
+                    <li><strong>3 dias antes</strong>: notificação automática</li>
+                </ul>
             </div>
         </div>
 
-        <div class="client-list">
-            <h2 style="color: #667eea; margin-bottom: 20px;">👥 Clientes Cadastrados</h2>
-            <div id="clientsList">
-                <div class="loading">🔄 Carregando clientes...</div>
+        <div id="tab-financeiro" class="tab-content">
+            <div class="cards">
+                <div class="card">
+                    <h2>💵 Registrar Venda</h2>
+                    <div class="input-group">
+                        <label>Cliente (opcional)</label>
+                        <select id="saleClient">
+                            <option value="">Venda avulsa</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Valor da Venda (R$)</label>
+                        <input type="number" id="saleAmount" placeholder="50.00" step="0.01" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Data da Venda</label>
+                        <input type="date" id="saleDate">
+                    </div>
+                    <div class="input-group">
+                        <label>Descrição</label>
+                        <input type="text" id="saleDescription" placeholder="Venda de galão 20L">
+                    </div>
+                    <button class="btn" onclick="addSale()">Registrar Venda</button>
+                </div>
+
+                <div class="card">
+                    <h2>💸 Registrar Custo</h2>
+                    <div class="input-group">
+                        <label>Tipo de Custo</label>
+                        <select id="expenseType">
+                            <option value="operacional">Operacional</option>
+                            <option value="estoque">Estoque/Fornecedor</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="salario">Salário</option>
+                            <option value="aluguel">Aluguel</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Valor do Custo (R$)</label>
+                        <input type="number" id="expenseAmount" placeholder="200.00" step="0.01" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Data do Custo</label>
+                        <input type="date" id="expenseDate">
+                    </div>
+                    <div class="input-group">
+                        <label>Descrição</label>
+                        <input type="text" id="expenseDescription" placeholder="Compra de galões">
+                    </div>
+                    <button class="btn" onclick="addExpense()">Registrar Custo</button>
+                </div>
             </div>
-        </div>
 
-        <div class="system-info">
-            <h3>🔥 Firebase Realtime Database</h3>
-            <p><strong>Banco de dados em tempo real na nuvem!</strong></p>
-            <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
-                <li>✅ Dados sincronizados automaticamente</li>
-                <li>✅ Acesso de qualquer dispositivo</li>
-                <li>✅ Atualizações em tempo real</li>
-                <li>✅ 1GB de armazenamento grátis</li>
-                <li>✅ Backup automático</li>
-            </ul>
-            
-            <h3 style="margin-top: 20px;">📱 Integração WhatsApp</h3>
-            <p><strong>Via Link wa.me (100% Gratuito):</strong></p>
-            <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
-                <li>✅ Abre o WhatsApp automaticamente</li>
-                <li>✅ Mensagem personalizada com nome do cliente</li>
-                <li>✅ Funciona no celular e desktop</li>
-                <li>✅ Sem necessidade de API paga</li>
-                <li>✅ Sem configuração adicional</li>
-            </ul>
+            <div class="client-list">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📊 Resumo Financeiro</h2>
 
-            <h3 style="margin-top: 20px;">🚀 Deploy no Netlify</h3>
-            <p style="margin-top: 10px;">Este sistema está pronto para:</p>
-            <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-                <li>✅ Hospedagem no Netlify (gratuita)</li>
-                <li>✅ HTTPS automático</li>
-                <li>✅ CDN global</li>
-                <li>✅ Deploy em segundos</li>
-            </ul>
+                <div class="period-selector">
+                    <button class="period-btn active" onclick="changePeriod('day')">Dia</button>
+                    <button class="period-btn" onclick="changePeriod('week')">Semana</button>
+                    <button class="period-btn" onclick="changePeriod('month')">Mês</button>
+                    <button class="period-btn" onclick="changePeriod('bimonthly')">Bimestre</button>
+                    <button class="period-btn" onclick="changePeriod('quarter')">Trimestre</button>
+                    <button class="period-btn" onclick="changePeriod('semester')">Semestre</button>
+                    <button class="period-btn" onclick="changePeriod('year')">Ano</button>
+                </div>
+
+                <div class="finance-summary">
+                    <div class="finance-card revenue">
+                        <h3>💵 Receitas</h3>
+                        <div class="amount" id="totalRevenue">R$ 0,00</div>
+                    </div>
+                    <div class="finance-card expense">
+                        <h3>💸 Despesas</h3>
+                        <div class="amount" id="totalExpense">R$ 0,00</div>
+                    </div>
+                    <div class="finance-card profit">
+                        <h3>📈 Lucro Líquido</h3>
+                        <div class="amount" id="totalProfit">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📋 Últimas Transações</h3>
+                    <div id="transactionsList">
+                        <div class="loading">🔄 Carregando transações...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -373,8 +582,7 @@
         // ==========================================
         // CONFIGURAÇÃO DO FIREBASE
         // ==========================================
-        
-        // COLE SUAS CREDENCIAIS AQUI:
+
         const firebaseConfig = {
             apiKey: "AIzaSyBM3NS2G4gFzQG5zo4fOMBcA4Ll-VKhYjA",
             authDomain: "apphidrabot.firebaseapp.com",
@@ -386,58 +594,44 @@
             measurementId: "G-XYXZFE084G"
         };
 
-        // ==========================================
-        // INICIALIZAÇÃO
-        // ==========================================
-        
+        // Inicializa Firebase
         let db;
         let isFirebaseConfigured = false;
 
-        function initializeFirebase() {
-            try {
-                // Verifica se está configurado
-                if (firebaseConfig.apiKey === "SUA_API_KEY_AQUI") {
-                    console.warn('⚠️ Firebase não configurado');
-                    document.getElementById('setupCard').style.display = 'block';
-                    updateFirebaseStatus('⚠️ Configure o Firebase', 'error');
-                    return false;
-                }
-
-                // Inicializa Firebase
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.database();
-                
-                isFirebaseConfigured = true;
-                document.getElementById('setupCard').style.display = 'none';
-                updateFirebaseStatus('✅ Conectado ao Firebase', 'connected');
-                
-                console.log('✅ Firebase inicializado com sucesso!');
-                
-                // Carrega dados
-                loadClients();
-                
-                return true;
-            } catch (error) {
-                console.error('❌ Erro ao inicializar Firebase:', error);
-                updateFirebaseStatus('❌ Erro na conexão', 'error');
-                document.getElementById('setupCard').style.display = 'block';
-                return false;
-            }
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            isFirebaseConfigured = true;
+            document.getElementById('firebaseStatus').textContent = '✅ Conectado ao Firebase';
+            document.getElementById('firebaseStatus').className = 'firebase-status connected';
+            console.log('✅ Firebase inicializado com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar Firebase:', error);
+            document.getElementById('firebaseStatus').textContent = '❌ Erro na conexão';
+            document.getElementById('firebaseStatus').className = 'firebase-status error';
         }
 
-        function updateFirebaseStatus(message, status = '') {
-            const statusEl = document.getElementById('firebaseStatus');
-            statusEl.textContent = message;
-            statusEl.className = 'firebase-status ' + status;
-        }
+        // Variáveis globais
+        let clients = {};
+        let deliveries = {};
+        let transactions = [];
+        let currentPeriod = 'day';
 
         // ==========================================
-        // FUNÇÕES DO SISTEMA
+        // INICIALIZAÇÃO
+        // ==========================================
+
+        document.getElementById('deliveryDate').valueAsDate = new Date();
+        document.getElementById('saleDate').valueAsDate = new Date();
+        document.getElementById('expenseDate').valueAsDate = new Date();
+
+        // ==========================================
+        // FUNÇÕES DE CLIENTE
         // ==========================================
 
         async function addClient() {
             if (!isFirebaseConfigured) {
-                alert('⚠️ Por favor, configure o Firebase primeiro!');
+                alert('⚠️ Firebase não conectado!');
                 return;
             }
 
@@ -445,7 +639,7 @@
             const phone = document.getElementById('clientPhone').value.trim();
 
             if (!name || !phone) {
-                alert('Por favor, preencha todos os campos!');
+                alert('Por favor, preencha nome e telefone!');
                 return;
             }
 
@@ -463,10 +657,7 @@
             };
 
             try {
-                // Salva cliente no Firebase
                 await db.ref('clients/' + clientId).set(client);
-                
-                // Inicializa array de entregas
                 await db.ref('deliveries/' + clientId).set([]);
 
                 document.getElementById('clientName').value = '';
@@ -474,14 +665,14 @@
 
                 alert(`✅ Cliente ${name} cadastrado com sucesso!`);
             } catch (error) {
-                console.error('Erro ao adicionar cliente:', error);
-                alert('❌ Erro ao cadastrar cliente. Verifique o console.');
+                console.error('Erro ao cadastrar:', error);
+                alert('❌ Erro ao cadastrar cliente!');
             }
         }
 
         async function registerDelivery() {
             if (!isFirebaseConfigured) {
-                alert('⚠️ Por favor, configure o Firebase primeiro!');
+                alert('⚠️ Firebase não conectado!');
                 return;
             }
 
@@ -494,64 +685,142 @@
             }
 
             try {
-                // Busca entregas atuais
                 const snapshot = await db.ref('deliveries/' + clientId).once('value');
-                let deliveries = snapshot.val() || [];
+                let clientDeliveries = snapshot.val() || [];
 
-                // Adiciona nova entrega
                 const delivery = {
                     date: new Date(date + 'T12:00:00').toISOString(),
                     timestamp: new Date(date + 'T12:00:00').getTime()
                 };
 
-                deliveries.push(delivery);
+                clientDeliveries.push(delivery);
+                clientDeliveries.sort((a, b) => a.timestamp - b.timestamp);
 
-                // Ordena por timestamp
-                deliveries.sort((a, b) => a.timestamp - b.timestamp);
-
-                // Salva no Firebase
-                await db.ref('deliveries/' + clientId).set(deliveries);
+                await db.ref('deliveries/' + clientId).set(clientDeliveries);
 
                 alert('✅ Entrega registrada com sucesso!');
-                
-                // Verifica se precisa notificar
-                checkAndNotify(clientId, deliveries);
+                checkAndNotify(clientId, clientDeliveries);
             } catch (error) {
                 console.error('Erro ao registrar entrega:', error);
-                alert('❌ Erro ao registrar entrega. Verifique o console.');
+                alert('❌ Erro ao registrar entrega!');
             }
         }
 
-        function calculateAverageDays(deliveries) {
-            if (!deliveries || deliveries.length < 2) {
+        // ==========================================
+        // FUNÇÕES FINANCEIRAS
+        // ==========================================
+
+        async function addSale() {
+            if (!isFirebaseConfigured) {
+                alert('⚠️ Firebase não conectado!');
+                return;
+            }
+
+            const clientId = document.getElementById('saleClient').value;
+            const amount = parseFloat(document.getElementById('saleAmount').value);
+            const date = document.getElementById('saleDate').value;
+            const description = document.getElementById('saleDescription').value.trim();
+
+            if (!amount || amount <= 0 || !date) {
+                alert('Por favor, preencha o valor e a data!');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now().toString(),
+                type: 'revenue',
+                amount: amount,
+                date: new Date(date + 'T12:00:00').toISOString(),
+                description: description || 'Venda',
+                clientId: clientId || null,
+                clientName: clientId ? clients[clientId].name : 'Venda avulsa'
+            };
+
+            try {
+                await db.ref('transactions/' + transaction.id).set(transaction);
+
+                document.getElementById('saleAmount').value = '';
+                document.getElementById('saleDescription').value = '';
+
+                alert('✅ Venda registrada com sucesso!');
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao registrar venda!');
+            }
+        }
+
+        async function addExpense() {
+            if (!isFirebaseConfigured) {
+                alert('⚠️ Firebase não conectado!');
+                return;
+            }
+
+            const type = document.getElementById('expenseType').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const date = document.getElementById('expenseDate').value;
+            const description = document.getElementById('expenseDescription').value.trim();
+
+            if (!amount || amount <= 0 || !date) {
+                alert('Por favor, preencha o valor e a data!');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now().toString(),
+                type: 'expense',
+                amount: amount,
+                date: new Date(date + 'T12:00:00').toISOString(),
+                description: description || type,
+                expenseType: type
+            };
+
+            try {
+                await db.ref('transactions/' + transaction.id).set(transaction);
+
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expenseDescription').value = '';
+
+                alert('✅ Custo registrado com sucesso!');
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao registrar custo!');
+            }
+        }
+
+        // ==========================================
+        // ALGORITMO DE PREVISÃO
+        // ==========================================
+
+        function calculateAverageDays(clientDeliveries) {
+            if (!clientDeliveries || clientDeliveries.length < 2) {
                 return null;
             }
 
             let totalDays = 0;
-            for (let i = 1; i < deliveries.length; i++) {
-                const diff = deliveries[i].timestamp - deliveries[i-1].timestamp;
+            for (let i = 1; i < clientDeliveries.length; i++) {
+                const diff = clientDeliveries[i].timestamp - clientDeliveries[i - 1].timestamp;
                 const days = diff / (1000 * 60 * 60 * 24);
                 totalDays += days;
             }
 
-            return Math.round(totalDays / (deliveries.length - 1));
+            return Math.round(totalDays / (clientDeliveries.length - 1));
         }
 
-        function predictNextDelivery(deliveries) {
-            const avgDays = calculateAverageDays(deliveries);
+        function predictNextDelivery(clientDeliveries) {
+            const avgDays = calculateAverageDays(clientDeliveries);
             if (!avgDays) return null;
 
-            const lastDelivery = deliveries[deliveries.length - 1];
+            const lastDelivery = clientDeliveries[clientDeliveries.length - 1];
             const nextDate = new Date(lastDelivery.timestamp + (avgDays * 24 * 60 * 60 * 1000));
-            
+
             return {
                 date: nextDate,
                 daysAvg: avgDays
             };
         }
 
-        function checkAndNotify(clientId, deliveries) {
-            const prediction = predictNextDelivery(deliveries);
+        function checkAndNotify(clientId, clientDeliveries) {
+            const prediction = predictNextDelivery(clientDeliveries);
             if (!prediction) return;
 
             const today = new Date();
@@ -566,12 +835,12 @@
             try {
                 const clientSnapshot = await db.ref('clients/' + clientId).once('value');
                 const client = clientSnapshot.val();
-                
-                const deliveriesSnapshot = await db.ref('deliveries/' + clientId).once('value');
-                const deliveries = deliveriesSnapshot.val() || [];
 
-                const prediction = predictNextDelivery(deliveries);
-                
+                const deliveriesSnapshot = await db.ref('deliveries/' + clientId).once('value');
+                const clientDeliveries = deliveriesSnapshot.val() || [];
+
+                const prediction = predictNextDelivery(clientDeliveries);
+
                 if (!prediction) {
                     alert('Ainda não há previsão para este cliente. Registre mais entregas!');
                     return;
@@ -579,9 +848,8 @@
 
                 const today = new Date();
                 const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
-                
-                // Mensagem personalizada
-                let message = `Olá ${client.name}! 💧
+
+                const message = `Olá ${client.name}! 💧
 
 Percebemos que seu galão de água pode estar acabando em breve.
 
@@ -592,137 +860,4 @@ Gostaria de solicitar outro galão agora?
 
 Responda SIM para confirmar seu pedido! 😊`;
 
-                // Remove o + do telefone se tiver e garante formato correto
-                const phone = client.phone.replace(/[^0-9]/g, '');
-                
-                // Codifica a mensagem para URL
-                const encodedMessage = encodeURIComponent(message);
-                
-                // Monta o link do WhatsApp
-                const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-                
-                // Abre o WhatsApp
-                window.open(whatsappUrl, '_blank');
-                
-                console.log('✅ WhatsApp aberto para:', client.name);
-            } catch (error) {
-                console.error('Erro ao abrir WhatsApp:', error);
-                alert('❌ Erro ao abrir WhatsApp. Verifique o número do telefone.');
-            }
-        }
-
-        // ==========================================
-        // INTERFACE
-        // ==========================================
-
-        function loadClients() {
-            if (!isFirebaseConfigured) return;
-
-            // Escuta mudanças em tempo real
-            db.ref('clients').on('value', async (snapshot) => {
-                const clients = snapshot.val() || {};
-                
-                // Atualiza select
-                const select = document.getElementById('deliveryClient');
-                select.innerHTML = '<option value="">Selecione um cliente</option>';
-                
-                Object.values(clients).forEach(client => {
-                    const option = document.createElement('option');
-                    option.value = client.id;
-                    option.textContent = client.name;
-                    select.appendChild(option);
-                });
-
-                // Atualiza lista visual
-                await updateClientsList(clients);
-            });
-        }
-
-        async function updateClientsList(clients) {
-            const listDiv = document.getElementById('clientsList');
-            listDiv.innerHTML = '';
-
-            if (Object.keys(clients).length === 0) {
-                listDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum cliente cadastrado ainda. Comece cadastrando seu primeiro cliente! 🚀</p>';
-                return;
-            }
-
-            for (const client of Object.values(clients)) {
-                const deliveriesSnapshot = await db.ref('deliveries/' + client.id).once('value');
-                const deliveries = deliveriesSnapshot.val() || [];
-
-                const clientDiv = document.createElement('div');
-                clientDiv.className = 'client-item';
-
-                const deliveryCount = deliveries.length;
-                const avgDays = calculateAverageDays(deliveries);
-                const prediction = predictNextDelivery(deliveries);
-
-                let predictionHTML = '';
-                if (prediction) {
-                    const today = new Date();
-                    const daysUntil = Math.floor((prediction.date - today) / (1000 * 60 * 60 * 24));
-                    
-                    let alertClass = '';
-                    let alertText = '';
-                    
-                    if (daysUntil <= 3 && daysUntil >= 0) {
-                        alertClass = 'alert-success';
-                        alertText = `🔔 Cliente será notificado! Próxima entrega prevista em ${daysUntil} dia(s)`;
-                    } else if (daysUntil < 0) {
-                        alertClass = 'alert';
-                        alertText = '⚠️ Entrega atrasada! Cliente pode precisar de galão urgente.';
-                    }
-
-                    if (alertText) {
-                        predictionHTML = `<div class="alert ${alertClass}">${alertText}</div>`;
-                    }
-
-                    predictionHTML += `
-                        <div class="notification">
-                            <strong>📅 Próxima entrega prevista:</strong> ${prediction.date.toLocaleDateString('pt-BR')}<br>
-                            <strong>📊 Baseado em:</strong> ${deliveryCount} entregas anteriores
-                        </div>
-                    `;
-                }
-
-                clientDiv.innerHTML = `
-                    <div class="client-header">
-                        <div>
-                            <div class="client-name">${client.name}</div>
-                            <div class="client-phone">📱 ${client.phone}</div>
-                        </div>
-                        <button class="btn btn-small" onclick="sendWhatsAppMessage('${client.id}')" ${!prediction ? 'disabled' : ''}>
-                            📱 Abrir WhatsApp
-                        </button>
-                    </div>
-                    <div class="client-stats">
-                        <div class="stat">
-                            <div class="stat-label">Entregas Registradas</div>
-                            <div class="stat-value">${deliveryCount}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Média de Consumo</div>
-                            <div class="stat-value">${avgDays ? avgDays + ' dias' : 'Calculando...'}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Status do Sistema</div>
-                            <div class="stat-value">${deliveryCount < 2 ? '🟡 Aprendendo' : '🟢 Ativo'}</div>
-                        </div>
-                    </div>
-                    ${predictionHTML}
-                `;
-
-                listDiv.appendChild(clientDiv);
-            }
-        }
-
-        // ==========================================
-        // INICIALIZAÇÃO
-        // ==========================================
-
-        document.getElementById('deliveryDate').valueAsDate = new Date();
-        initializeFirebase();
-    </script>
-</body>
-</html>
+                const phone = client.phone.
